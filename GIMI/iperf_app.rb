@@ -24,8 +24,8 @@ packets via various transports, such as TCP and UDP.
   a.defProperty('port', 
                 'set server port to listen on/connect to to n (default 5001)',
                 '-p', {:type => :integer, :dynamic => false})
-  a.defProperty('udp', 'use UDP rather than TCP',
-                '-u', {:order => 2, :type => :boolean, :dynamic => false})
+#  a.defProperty('udp', 'use UDP rather than TCP',
+ #               '-u', {:order => 2, :type => :boolean, :dynamic => false})
   a.defProperty('window', 'TCP window size (socket buffer size)',
                 '-w', {:type => :integer, :dynamic => false})
   a.defProperty('bind', 'bind to <host>, an interface or multicast address',
