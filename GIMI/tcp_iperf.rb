@@ -78,7 +78,7 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
   wait 1
   info "Starting Sender 2"
   group('Sender2').startApplications
-  wait 315
+  wait 15
   info "Stopping Sender 2"
   group('Sender2').stopApplications
   wait 5
