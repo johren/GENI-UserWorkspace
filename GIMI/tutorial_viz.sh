@@ -1,7 +1,7 @@
 #!/bin/sh
 perl R_script.pl $1
 perl html_script.pl $1
-expect -c 'spawn sudo cp oml.html /var/www/html; expect password; send "\$tr3am\n"; interact'
+expect -c 'spawn sudo cp oml.html /var/www; expect password; send "gec14user\n"; interact'
 while true
 do
  rm -f $1.sq3
