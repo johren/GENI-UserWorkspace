@@ -13,8 +13,8 @@ defGroup('Sender1', property.source1) do |n|
   #p.defProperty('bandwidth', 'Bandwidth to send at in bit/sec [KM]', property.sendrate)
   n.addApplication('iperf-5.4') do |a|
     a.setProperty('client', property.target1)
-    a.setProperty('time', 300)
-    a.setProperty('interval','10')
+    a.setProperty('time', 200)
+    a.setProperty('interval','5')
     a.setProperty('reportstyle', 'o')
     a.measure('connection', :samples => 1)
     a.measure('transfer', :samples => 1)
@@ -28,8 +28,8 @@ defGroup('Sender2', property.source1) do |n|
   #p.defProperty('bandwidth', 'Bandwidth to send at in bit/sec [KM]', property.sendrate)
   n.addApplication('iperf-5.4') do |a|
     a.setProperty('client', property.target2)
-    a.setProperty('time', 300)
-    a.setProperty('interval','10')
+    a.setProperty('time', 200)
+    a.setProperty('interval','5')
     a.setProperty('reportstyle', 'o')
     a.measure('connection', :samples => 1)
     a.measure('transfer', :samples => 1)
@@ -64,7 +64,7 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
   wait 1
   info 'Starting Sender 2'
   group('Sender2').startApplications
-  wait 315
+  wait 215
   info 'Stopping Sender 2'
   group('Sender2').stopApplications
   wait 5
