@@ -21,7 +21,7 @@ print OUT "plot(throughput1,type=\"o\",col=\"red\",ylim= g_range, lty=2, xlab=\"
 print OUT "lines(throughput2,type=\"o\",col=\"blue\",xlab=\"Experiment Interval\",ylab=\"Throughput (Mbps)\")\n";
 print OUT "title(main=\"Iperf_Experiment on ExoGENI\", col.main=\"red\", font.main=4)\n";
 print OUT "legend(1, g_range[2], c(\"192.168.3.12\",\"192.168.2.12\"), cex=0.8,
-   col=c(\"blue\",\"red\"), pch=21:22, lty=1:2)\;\n";
+   col=c(\"red\",\"blue\"), pch=21:22, lty=1:2)\;\n";
 
 
 print OUT "dev.off()";
