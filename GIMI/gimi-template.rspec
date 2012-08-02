@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rspec type="request"
+        xsi:schemaLocation="http://www.geni.net/resources/rspec/3
+                            http://www.geni.net/resources/rspec/3/request.xsd
+                            http://www.protogeni.net/resources/rspec/ext/shared-vlan/1
+                            http://www.protogeni.net/resources/rspec/ext/shared-vlan/1/request.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:s="http://www.protogeni.net/resources/rspec/ext/shared-vlan/1"
+        xmlns="http://www.geni.net/resources/rspec/3">
+  <node client_id="NodeA" >
+    <sliver_type name="c1.xlarge">
+   <disk_image name="http://emmy9.casa.umass.edu/GEC14-GIMI-Tutorial/dilip-gec14.xml" version="8cc0ebc000f2332fa51d42f14b3cae16d43518ab" />
+    </sliver_type>
+    <interface client_id="NodeA:if0">
+   <ip address="192.168.1.10" netmask="255.255.255.0" />
+    </interface>
+    <interface client_id="NodeA:if1">
+   <ip address="192.168.3.10" netmask="255.255.255.0" />
+    </interface>
+    <services>
+      <execute command="wget -q -P /tmp http://pc41.emulab.net/gimi-postboot.sh ;chmod +x /tmp/gimi-postboot.sh;/tmp/gimi-postboot.sh %SLICENAME% NodeA > /tmp/gimi-postboot.log" shell="/bin/sh"/>
+    </services>
+  </node>
+  <node client_id="NodeB" >
+    <sliver_type name="c1.xlarge">
+   <disk_image name="http://emmy9.casa.umass.edu/GEC14-GIMI-Tutorial/dilip-gec14.xml" version="8cc0ebc000f2332fa51d42f14b3cae16d43518ab" />
+    </sliver_type>
+    <interface client_id="NodeB:if0">
+   <ip address="192.168.1.11" netmask="255.255.255.0" />
+    </interface>
+    <interface client_id="NodeB:if1">
+   <ip address="192.168.2.11" netmask="255.255.255.0" />
+    </interface>
+    <services>
+      <execute command="wget -q -P /tmp http://pc41.emulab.net/gimi-postboot.sh ;chmod +x /tmp/gimi-postboot.sh;/tmp/gimi-postboot.sh %SLICENAME% NodeB > /tmp/gimi-postboot.log" shell="/bin/sh"/>
+    </services>
+  </node>
+  <node client_id="NodeC" >
+    <sliver_type name="c1.xlarge">
+   <disk_image name="http://emmy9.casa.umass.edu/GEC14-GIMI-Tutorial/dilip-gec14.xml" version="8cc0ebc000f2332fa51d42f14b3cae16d43518ab" />
+    </sliver_type>
+    <interface client_id="NodeC:if0">
+   <ip address="192.168.3.12" netmask="255.255.255.0" />
+    </interface>
+    <interface client_id="NodeC:if1">
+   <ip address="192.168.2.12" netmask="255.255.255.0" />
+    </interface>
+    <services>
+      <execute command="wget -q -P /tmp http://pc41.emulab.net/gimi-postboot.sh ;chmod +x /tmp/gimi-postboot.sh;/tmp/gimi-postboot.sh %SLICENAME% NodeC > /tmp/gimi-postboot.log" shell="/bin/sh"/>
+    </services>
+  </node>
+  <link client_id="link1">
+    <interface_ref client_id="NodeA:if0"/>
+    <interface_ref client_id="NodeB:if0"/>
+    <property source_id="NodeA:if0" dest_id="NodeB:if0" />
+    <property source_id="NodeB:if0" dest_id="NodeA:if0" />
+    <link_type name="lan"/>
+  </link>
+  <link client_id="link2">
+    <interface_ref client_id="NodeB:if1"/>
+    <interface_ref client_id="NodeC:if1"/>
+    <property source_id="NodeB:if1" dest_id="NodeC:if1" />
+    <property source_id="NodeC:if1" dest_id="NodeB:if1" />
+    <link_type name="lan"/>
+  </link>
+  <link client_id="link3">
+    <interface_ref client_id="NodeA:if1"/>
+    <interface_ref client_id="NodeC:if0"/>
+    <property source_id="NodeA:if1" dest_id="NodeC:if0" />
+    <property source_id="NodeC:if0" dest_id="NodeA:if1" />
+    <link_type name="lan"/>
+  </link>
+</rspec>
