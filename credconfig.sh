@@ -45,8 +45,8 @@ if [ "${KEYISTHERE}" = "" -o "${CERTISTHERE}" = "" ]; then
     exit 1
 fi 
 
-# Make sure the credential file is in $HOME/.ssl
-CREDFILE=`basename ${SRCGENICREDPATH}`
+# Make sure the certificate file is in $HOME/.ssl
+CREDFILE="geniuser.pem"
 DSTGENICREDPATH="${HOME}/.ssl/${CREDFILE}"
 if [ "${SRCGENICREDPATH}" != "${DSTGENICREDPATH}" ]; then
     if [ ! -d ${HOME}/.ssl ]; then
@@ -64,25 +64,15 @@ else
     /opt/gcf/src/omni-configure.py -p ${DSTGENICREDPATH} -f pg 
 
     # Add no StrictHostKeyChecking 
-    echo "StrictHostKeyChecking no" >> ${HOME}/.ssh/config
-
+    grep ^StrictHostKeyChecking ${HOME}/.ssh/config > /dev/null
+    if [ $? -eq 1 ]; then
+        echo "StrictHostKeyChecking no" >> ${HOME}/.ssh/config
+    fi
     # Add rack nicknames
-    echo "# Racks" >> ${HOME}/.gcf/omni_config
-    echo "exosm=,https://geni.renci.org:11443/orca/xmlrpc" >> ${HOME}/.gcf/omni_config
-    echo "insta-utah=,https://boss.utah.geniracks.net/protogeni/xmlrpc/am/2.0" >> ${HOME}/.gcf/omni_config
+#    echo "# Racks" >> ${HOME}/.gcf/omni_config
+#    echo "exosm=,https://geni.renci.org:11443/orca/xmlrpc" >> ${HOME}/.gcf/omni_config
+#    echo "insta-utah=,https://boss.utah.geniracks.net/protogeni/xmlrpc/am/2.0" >> ${HOME}/.gcf/omni_config
 fi
-
-# Add PROTOGENI_CERTIFICATE to .bashrc
-sed -e 's/^export PROTOGENI_CERTIFICATE/#export PROTOGENI_CERTIFICATE/g' ${HOME}/.bashrc > ${HOME}/.bashrc.temp
-mv ${HOME}/.bashrc.temp ${HOME}/.bashrc
-echo "export PROTOGENI_CERTIFICATE=\"${DSTGENICREDPATH}\"" >> ${HOME}/.bashrc
-
-# Add HTTPS_KEY_FILE and HTTPS_CERT_FILE to .bashrc
-sed -e 's/^export HTTPS_KEY_FILE/#export HTTPS_KEY_FILE/g' ${HOME}/.bashrc > ${HOME}/.bashrc.temp
-sed -e 's/^export HTTPS_CERT_FILE/#export HTTPS_CERT_FILE/g' ${HOME}/.bashrc.temp > ${HOME}/.bashrc
-rm -f ${HOME}/.bashrc.temp
-echo "export HTTPS_KEY_FILE=\"${DSTGENICREDPATH}\"" >> ${HOME}/.bashrc
-echo "export HTTPS_CERT_FILE=\"${DSTGENICREDPATH}\"" >> ${HOME}/.bashrc
 
 # Configure iRODS
 if [ "${IRODSPATH}" != "" ]; then
@@ -119,7 +109,7 @@ fi
 # If a keystore file is specified, add cert and private key to flukes.properties
 if [ "${SRCGENIJKSPATH}" != "" ]; then
     # Make sure the keystore file is in $HOME/.ssl
-    JKSFILE=`basename ${SRCGENIJKSPATH}`
+    JKSFILE="geniuser.jks"
     DSTGENIJKSPATH="${HOME}/.ssl/${JKSFILE}"
     if [ "${SRCGENIJKSPATH}" != "${DSTGENIJKSPATH}" ]; then
         if [ ! -d ${HOME}/.ssl ]; then
@@ -133,15 +123,15 @@ if [ "${SRCGENIJKSPATH}" != "" ]; then
     elif [ ! -r ${DSTGENIJKSPATH} ]; then
         echo "Cannot read ${DSTGENIJKSPATH}"
     else
-        sed -e 's/^user.keystore/#user.keystore/g' ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
+        grep -v ^user.keystore= ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
         mv ${HOME}/.flukes.temp ${HOME}/.flukes.properties
         echo "user.keystore=\"${DSTGENIJKSPATH}\"" >> ${HOME}/.flukes.properties
 
-        sed -e 's/^ssh.key/#ssh.key/g' ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
+        grep -v ^ssh.key= ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
         mv ${HOME}/.flukes.temp ${HOME}/.flukes.properties
         echo "ssh.key=\"${HOME}/.ssh/geni_key\"" >> ${HOME}/.flukes.properties
 
-        sed -e 's/^ssh.pubkey/#ssh.pubkey/g' ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
+        grep -v ^ssh.pubkey= ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
         mv ${HOME}/.flukes.temp ${HOME}/.flukes.properties
         echo "ssh.pubkey=\"${HOME}/.ssh/geni_key.pub\"" >> ${HOME}/.flukes.properties
     fi
