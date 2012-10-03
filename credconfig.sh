@@ -74,6 +74,18 @@ else
 #    echo "insta-utah=,https://boss.utah.geniracks.net/protogeni/xmlrpc/am/2.0" >> ${HOME}/.gcf/omni_config
 fi
 
+# Add PROTOGENI_CERTIFICATE to .bashrc
+sed -e 's/^export PROTOGENI_CERTIFICATE/#export PROTOGENI_CERTIFICATE/g' ${HOME}/.bashrc > ${HOME}/.bashrc.temp
+mv ${HOME}/.bashrc.temp ${HOME}/.bashrc
+echo "export PROTOGENI_CERTIFICATE=\"${DSTGENICREDPATH}\"" >> ${HOME}/.bashrc
+
+# Add HTTPS_KEY_FILE and HTTPS_CERT_FILE to .bashrc
+sed -e 's/^export HTTPS_KEY_FILE/#export HTTPS_KEY_FILE/g' ${HOME}/.bashrc > ${HOME}/.bashrc.temp
+sed -e 's/^export HTTPS_CERT_FILE/#export HTTPS_CERT_FILE/g' ${HOME}/.bashrc.temp > ${HOME}/.bashrc
+rm -f ${HOME}/.bashrc.temp
+echo "export HTTPS_KEY_FILE=\"${DSTGENICREDPATH}\"" >> ${HOME}/.bashrc
+echo "export HTTPS_CERT_FILE=\"${DSTGENICREDPATH}\"" >> ${HOME}/.bashrc
+
 # Configure iRODS
 if [ "${IRODSPATH}" != "" ]; then
     if [ ! -r ${IRODSPATH} ]; then
