@@ -156,15 +156,15 @@ if [ "${SRCGENIJKSPATH}" != "" ]; then
     else
         grep -v ^user.keystore= ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
         mv ${HOME}/.flukes.temp ${HOME}/.flukes.properties
-        echo "user.keystore=\"${DSTGENIJKSPATH}\"" >> ${HOME}/.flukes.properties
+        echo "user.keystore=${DSTGENIJKSPATH}" >> ${HOME}/.flukes.properties
 
         grep -v ^ssh.key= ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
         mv ${HOME}/.flukes.temp ${HOME}/.flukes.properties
-        echo "ssh.key=\"${HOME}/.ssh/geni_key\"" >> ${HOME}/.flukes.properties
+        echo "ssh.key=${HOME}/.ssh/geni_key" >> ${HOME}/.flukes.properties
 
         grep -v ^ssh.pubkey= ${HOME}/.flukes.properties > ${HOME}/.flukes.temp
         mv ${HOME}/.flukes.temp ${HOME}/.flukes.properties
-        echo "ssh.pubkey=\"${HOME}/.ssh/geni_key.pub\"" >> ${HOME}/.flukes.properties
+        echo "ssh.pubkey=${HOME}/.ssh/geni_key.pub" >> ${HOME}/.flukes.properties
     fi
 fi
 
