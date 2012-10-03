@@ -79,6 +79,14 @@ if [ -r ${HOME}/.gcf/omni_config ]; then
     mv ${HOME}/.gcf/omni_config ${HOME}/.gcf/omni_config.bak
     echo "omni_config file exists, moving to omni_config.bak"
 fi
+if [ -r ${HOME}/.ssh/geni_key ]; then
+    mv ${HOME}/.ssh/geni_key ${HOME}/.ssh/geni_key.bak
+    echo "key pair exists, moving to backup"
+    if [ -r ${HOME}/.ssh/geni_key.pub ]; then
+        mv ${HOME}/.ssh/geni_key.pub ${HOME}/.ssh/geni_key.pub.bak
+    fi
+fi
+echo "Creating public key from private key in GENI certificate"
 echo "Creating public key from private key in GENI certificate"
 echo "Creating omni_config"
 ${GCFLOC}/src/omni-configure.py -p ${DSTGENICREDPATH} -f pg 
