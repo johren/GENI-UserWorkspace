@@ -6,10 +6,23 @@ SRCGENIJKSPATH=""
 DSTGENIJKSPATH=""
 IRODSPATH=""
 
+_usage() {
+cat <<EOF
+        Usage: credconfig.sh -g <geni-cert-path> [ -f <keystore-path> ] [ -i <irods-conf-path> ]
+	Required:
+		-g   --geni           Configures the geni certificate
+        Options:
+                -f   --flukes         Configures Flukes to use the keystore 
+                -h   --help           Show this message
+		-i   --irods          Configures the irods client
+EOF
+}
+
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -o g:f:i: -l geni:,flukes:,irods: -- "$@")
+if ! options=$(getopt -o g:f:i:-h -l geni:,flukes:,irods:,help -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
+    _usage 1>&2
     exit 1
 fi
 
@@ -21,8 +34,9 @@ do
     -g|--geni) SRCGENICREDPATH=`echo $2 | sed -e "s/'//g"` ; shift;;
     -f|--flukes) SRCGENIJKSPATH=`echo $2 | sed -e "s/'//g"`; shift;;
     -i|--irods) IRODSPATH=`echo $2 | sed -e "s/'//g"` ; shift;;
+    -h|--help) _usage 1>&2;exit 0;;
     (--) shift; break;;
-    (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
+    (-*) echo "$0: error - unrecognized option $1" 1>&2; _usage 1>&2; exit 1;;
     (*) break;;
     esac
     shift
@@ -30,11 +44,13 @@ done
 
 if [ "${SRCGENICREDPATH}" = "" ]; then
     echo "Must provide path to GENI credential"
+    _usage 1>&2
     exit 1
 fi
 
 if [ ! -r ${SRCGENICREDPATH} ]; then
     echo "Cannot read ${SRCGENICREDPATH}"
+    _usage 1>&2
     exit 1
 fi
 
@@ -42,6 +58,7 @@ KEYISTHERE=`cat ${SRCGENICREDPATH} | grep "BEGIN RSA PRIVATE KEY"`
 CERTISTHERE=`cat ${SRCGENICREDPATH} | grep "BEGIN CERTIFICATE"`
 if [ "${KEYISTHERE}" = "" -o "${CERTISTHERE}" = "" ]; then
     echo "Invalid GENI credential at ${SRCGENICREDPATH}"
+    _usage 1>&2
     exit 1
 fi 
 
