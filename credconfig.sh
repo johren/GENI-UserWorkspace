@@ -76,22 +76,22 @@ fi
 
 # Create the omni_config file
 if [ -r ${HOME}/.gcf/omni_config ]; then
-    echo "omni_config file exists, skipping OMNI configuration"
-else
-    echo "Creating public key from private key in GENI certificate"
-    echo "Creating omni_config"
-    ${GCFLOC}/src/omni-configure.py -p ${DSTGENICREDPATH} -f pg 
+    mv ${HOME}/.gcf/omni_config ${HOME}/.gcf/omni_config.bak
+    echo "omni_config file exists, moving to omni_config.bak"
+fi
+echo "Creating public key from private key in GENI certificate"
+echo "Creating omni_config"
+${GCFLOC}/src/omni-configure.py -p ${DSTGENICREDPATH} -f pg 
 
-    # Add no StrictHostKeyChecking 
-    grep ^StrictHostKeyChecking ${HOME}/.ssh/config > /dev/null
-    if [ $? -eq 1 ]; then
-        echo "StrictHostKeyChecking no" >> ${HOME}/.ssh/config
-    fi
-    # Add rack nicknames
+# Add no StrictHostKeyChecking 
+grep ^StrictHostKeyChecking ${HOME}/.ssh/config > /dev/null
+if [ $? -eq 1 ]; then
+    echo "StrictHostKeyChecking no" >> ${HOME}/.ssh/config
+fi
+# Add rack nicknames
 #    echo "# Racks" >> ${HOME}/.gcf/omni_config
 #    echo "exosm=,https://geni.renci.org:11443/orca/xmlrpc" >> ${HOME}/.gcf/omni_config
 #    echo "insta-utah=,https://boss.utah.geniracks.net/protogeni/xmlrpc/am/2.0" >> ${HOME}/.gcf/omni_config
-fi
 
 # Add PROTOGENI_CERTIFICATE to .bashrc
 sed -e 's/^export PROTOGENI_CERTIFICATE/#export PROTOGENI_CERTIFICATE/g' ${HOME}/.bashrc > ${HOME}/.bashrc.temp
