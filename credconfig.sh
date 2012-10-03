@@ -65,7 +65,7 @@ if [ "${KEYISTHERE}" = "" -o "${CERTISTHERE}" = "" ]; then
 fi 
 
 # Make sure the certificate file is in $HOME/.ssl
-CREDFILE="geniuser.pem"
+CREDFILE=`basename ${SRCGENICREDPATH}`
 DSTGENICREDPATH="${HOME}/.ssl/${CREDFILE}"
 if [ "${SRCGENICREDPATH}" != "${DSTGENICREDPATH}" ]; then
     if [ ! -d ${HOME}/.ssl ]; then
@@ -140,7 +140,7 @@ fi
 # If a keystore file is specified, add cert and private key to flukes.properties
 if [ "${SRCGENIJKSPATH}" != "" ]; then
     # Make sure the keystore file is in $HOME/.ssl
-    JKSFILE="geniuser.jks"
+    JKSFILE=`basename ${SRCGENIJKSPATH}`
     DSTGENIJKSPATH="${HOME}/.ssl/${JKSFILE}"
     if [ "${SRCGENIJKSPATH}" != "${DSTGENIJKSPATH}" ]; then
         if [ ! -d ${HOME}/.ssl ]; then
