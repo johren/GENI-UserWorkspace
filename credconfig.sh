@@ -1,5 +1,7 @@
 #!/bin/bash
 
+GCFLOC="/usr/local/bin/gcf"
+IRODSLOC="${HOME}/Tools/iRODS"
 SRCGENICREDPATH=""
 DSTGENICREDPATH=""
 SRCGENIJKSPATH=""
@@ -78,7 +80,7 @@ if [ -r ${HOME}/.gcf/omni_config ]; then
 else
     echo "Creating public key from private key in GENI certificate"
     echo "Creating omni_config"
-    /opt/gcf/src/omni-configure.py -p ${DSTGENICREDPATH} -f pg 
+    ${GCFLOC}/src/omni-configure.py -p ${DSTGENICREDPATH} -f pg 
 
     # Add no StrictHostKeyChecking 
     grep ^StrictHostKeyChecking ${HOME}/.ssh/config > /dev/null
@@ -130,7 +132,7 @@ if [ "${IRODSPATH}" != "" ]; then
             cp ${IRODSPATH} ${HOME}/.irods/.irodsEnv
             IRODSUSER=`grep irodsUserName ${HOME}/.irods/.irodsEnv | awk '{print $2}' | sed -e "s/'//g"`
             echo "Initializing irods password for user ${IRODSUSER}..."
-            /opt/irods/iRODS/clients/icommands/bin/iinit
+            ${IRODSLOC}/clients/icommands/bin/iinit
         fi
     fi
 fi
