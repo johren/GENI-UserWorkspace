@@ -17,11 +17,13 @@ cat <<EOF
                 -f   --flukes         Configures Flukes to use the keystore 
                 -h   --help           Show this message
 		-i   --irods          Configures the irods client
+                -b   --browser        Imports pkcs12 certificate into browsers
+
 EOF
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -o g:f:i:-h -l geni:,flukes:,irods:,help -- "$@")
+if ! options=$(getopt -o g:f:i:b:-h -l geni:,flukes:,irods:,browser:,help -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     _usage 1>&2
@@ -36,6 +38,7 @@ do
     -g|--geni) SRCGENICREDPATH=`echo $2 | sed -e "s/'//g"` ; shift;;
     -f|--flukes) SRCGENIJKSPATH=`echo $2 | sed -e "s/'//g"`; shift;;
     -i|--irods) IRODSPATH=`echo $2 | sed -e "s/'//g"` ; shift;;
+    -b|--browser) PK12PATH=`echo $2 | sed -e "s/'//g"` ; shift;;
     -h|--help) _usage 1>&2;exit 0;;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; _usage 1>&2; exit 1;;
@@ -96,11 +99,11 @@ grep ^StrictHostKeyChecking ${HOME}/.ssh/config > /dev/null
 if [ $? -eq 1 ]; then
     echo "StrictHostKeyChecking no" >> ${HOME}/.ssh/config
 fi
-# Add rack nicknames
-#    echo "# Racks" >> ${HOME}/.gcf/omni_config
-#    echo "exosm=,https://geni.renci.org:11443/orca/xmlrpc" >> ${HOME}/.gcf/omni_config
-#    echo "insta-utah=,https://boss.utah.geniracks.net/protogeni/xmlrpc/am/2.0" >> ${HOME}/.gcf/omni_config
 
+# Add key to the ssh-agent
+echo -e "\nAdding key to ssh-agent\n"
+ssh-add ${HOME}/.ssh/geni_key
+ 
 # Add PROTOGENI_CERTIFICATE to .bashrc
 sed -e 's/^export PROTOGENI_CERTIFICATE/#export PROTOGENI_CERTIFICATE/g' ${HOME}/.bashrc > ${HOME}/.bashrc.temp
 mv ${HOME}/.bashrc.temp ${HOME}/.bashrc
@@ -139,8 +142,30 @@ if [ "${IRODSPATH}" != "" ]; then
             fi
             cp ${IRODSPATH} ${HOME}/.irods/.irodsEnv
             IRODSUSER=`grep irodsUserName ${HOME}/.irods/.irodsEnv | awk '{print $2}' | sed -e "s/'//g"`
-            echo "Initializing irods password for user ${IRODSUSER}..."
+            echo -e "\nInitializing irods password for user ${IRODSUSER}..."
             ${IRODSLOC}/clients/icommands/bin/iinit
+        fi
+    fi
+fi
+
+# Import certificate into browsers 
+if [ "${PK12PATH}" != "" ]; then
+    if [ ! -r ${PK12PATH} ]; then
+        echo "Cannot read ${PK12PATH}"
+    else
+        FNAME=`basename ${PK12PATH}`
+        FEXT=`echo ${FNAME} | cut -f2 -d.`
+        if [ "${FEXT}" != "p12" ]; then
+            echo "Certificate file must be pkcs12 format"
+        else 
+            # Determine the Firefox directory
+            FFDIR=`ls -d ${HOME}/.mozilla/firefox/*.default`
+            # Import into Firefox
+            echo -e "\nImporting GENI certificate into Firefox"
+            pk12util -d ${FFDIR} -i ${PK12PATH} 
+            # Import into Chrome 
+            echo -e "\nImporting GENI certificate into Chrome"
+            pk12util -d sql:${HOME}/.pki/nssdb -i ${PK12PATH} 
         fi
     fi
 fi
