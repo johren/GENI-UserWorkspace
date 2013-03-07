@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GCFLOC="/usr/local/bin/gcf"
-IRODSLOC="${HOME}/Tools/iRODS"
+IRODSLOC="${HOME}/src/iRODS"
 SRCGENICREDPATH=""
 DSTGENICREDPATH=""
 SRCGENIJKSPATH=""
@@ -17,13 +17,15 @@ cat <<EOF
                 -f   --flukes         Configures Flukes to use the keystore 
                 -h   --help           Show this message
 		-i   --irods          Configures the irods client
+                -c   --cert           Configures the certificate to use for irods GSI
+                -k   --key            Configures the key to use for irods GSI
                 -b   --browser        Imports pkcs12 certificate into browsers
 
 EOF
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -o g:f:i:b:-h -l geni:,flukes:,irods:,browser:,help -- "$@")
+if ! options=$(getopt -o g:f:i:c:k:b:-h -l geni:,flukes:,irods:,cert:,key:,browser:,help -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     _usage 1>&2
@@ -38,6 +40,8 @@ do
     -g|--geni) SRCGENICREDPATH=`echo $2 | sed -e "s/'//g"` ; shift;;
     -f|--flukes) SRCGENIJKSPATH=`echo $2 | sed -e "s/'//g"`; shift;;
     -i|--irods) IRODSPATH=`echo $2 | sed -e "s/'//g"` ; shift;;
+    -c|--cert) IRODSCERT=`echo $2 | sed -e "s/'//g"` ; shift;;
+    -k|--key) IRODSKEY=`echo $2 | sed -e "s/'//g"` ; shift;;
     -b|--browser) PK12PATH=`echo $2 | sed -e "s/'//g"` ; shift;;
     -h|--help) _usage 1>&2;exit 0;;
     (--) shift; break;;
@@ -142,8 +146,18 @@ if [ "${IRODSPATH}" != "" ]; then
             fi
             cp ${IRODSPATH} ${HOME}/.irods/.irodsEnv
             IRODSUSER=`grep irodsUserName ${HOME}/.irods/.irodsEnv | awk '{print $2}' | sed -e "s/'//g"`
-            echo -e "\nInitializing irods password for user ${IRODSUSER}..."
-            ${IRODSLOC}/clients/icommands/bin/iinit
+#            echo -e "\nInitializing irods password for user ${IRODSUSER}..."
+#            ${IRODSLOC}/clients/icommands/bin/iinit
+            if [ ! -d ${HOME}/.globus ]; then
+                mkdir ${HOME}/.globus
+            fi
+            if [ "${IRODSCERT}" != "" ]; then
+                cp ${IRODSCERT} ${HOME}/.globus/usercert.pem
+            fi
+            if [ "${IRODSKEY}" != "" ]; then
+                cp ${IRODSKEY} ${HOME}/.globus/userkey.pem
+                chmod 600 ${HOME}/.globus/userkey.pem
+            fi
         fi
     fi
 fi
